@@ -121,7 +121,7 @@ class Team:
         for hero in self.heros:
             print(hero.name)
 
-    # Keep all your current code, but add these methods
+
     def attack(self, other_team):
         ''' Battle each team against each other.'''
         # TODO: Randomly select a living hero from each team and have
