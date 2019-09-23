@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, shuffle
 
 class Ability():
     def __init__(self, name, attack_strength):
@@ -10,8 +10,9 @@ class Ability():
 
 
 class Armor():
-    def __init__(self, max_block):
+    def __init__(self, name, max_block):
         self.max_block = max_block
+        self.name = name
 
     def block(self):
         return randint(0, self.max_block)
@@ -31,6 +32,8 @@ class Hero():
         self.starting_health = starting_health
         self.current_health = starting_health
         self.abilities = []
+        self.weapons = []
+        self.armors = []
         self.deaths = 0
         self.kills = 0
 
@@ -46,18 +49,21 @@ class Hero():
     def add_armor(self, armor):
         self.armors.append(armor)
 
-    def defend(self, damage):
+    def defend(self):
+        tot_block = 0
         try:
             for armor in self.armors:
-                damage -= armor.block()
+                tot_block -= armor.block()
+            if tot_block < 0:
+                tot_block = 0
         except:
             pass
-        if damage < 0:
-            damage = 0
-        return damage
+        return tot_block
 
     def take_damage(self, damage):
-        self.current_health -= self.defend(damage)
+        tot_damage = damage - self.defend()
+        if tot_damage > 0:
+            self.current_health -= tot_damage
 
     def is_alive(self):
         if self.current_health > 0:
@@ -78,13 +84,14 @@ class Hero():
             if opponent.abilities == [] and delf.abilities == []:
                 print("It's a draw!")
                 break
-            opponent.take_damage(opponent.defend(self.attack()))
-            self.take_damage(self.defend(opponent.attack()))
+            opponent.take_damage(opponent.take_damage(self.attack()))
+            self.take_damage(self.take_damage(opponent.attack()))
 
             if not opponent.is_alive():
                 print(f"{self.name} wins!")
                 self.add_kill(1)
                 break
+
             if not self.is_alive():
                 print(f"{opponent.name} wins!")
                 opponent.add_deaths(1)
@@ -121,19 +128,34 @@ class Team:
         for hero in self.heros:
             print(hero.name)
 
+    def is_alive(self):
+        ''' Returns True if any hero in the team is still alive.
+        '''
+        for hero in self.heros:
+            if hero.is_alive:
+                return True
+        return False
 
     def attack(self, other_team):
         ''' Battle each team against each other.'''
-        # TODO: Randomly select a living hero from each team and have
-        # them fight until one or both teams have no surviving heroes.
-        # Hint: Use the fight method in the Hero class.
-        pass
+        shuffle(self.heros)
+        shuffle(other_team.heros)
+        for hero in self.heros:
+            for opponent in other_team.heros:
+                while hero.is_alive() and opponent.is_alive():
+                    hero.fight(opponent)
+        if self.is_alive():
+            print(f"Team {self.name} wins!! Try harder next time, {opponent.name}...")
+        else:
+            print(f"Team {opponent.name} wins!! Try harder next time, {self.name}...")
 
     def revive_heroes(self, health=100):
         ''' Reset all heroes health to starting_health'''
-        # TODO: This method should reset all heroes health to their
-        # original starting value.
-        pass
+        for hero in self.heros:
+            try:
+                hero.current_health = hero.starting_health
+            except:
+                hero.current_health = health
 
     def stats(self):
         '''Print team statistics'''
@@ -141,4 +163,5 @@ class Team:
         # member of the team to the screen.
         # This data must be output to the console.
         # Hint: Use the information stored in each hero.
-        pass
+        for hero in self.heros:
+            print(f"{hero.name}: {hero.kills / hero.deaths}.{hero.kills % hero.deaths}")
