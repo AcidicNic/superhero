@@ -187,6 +187,14 @@ class Team():
                 return True
         return False
 
+    def survivors(self):
+        survivors = []
+        for hero in self.heros:
+            if hero.is_alive:
+                survivors.append(hero.name)
+        return survivors
+
+
     def attack(self, other_team):
         ''' Battle each team against each other.'''
         shuffle(self.heros)
@@ -296,11 +304,11 @@ class Arena():
         if self.prev_winner == "DRAW":
             print(f"{self.team_one} and {self.team_two} tied!")
         else:
-            print(f"Team {self.prev_winner.name} wins!! Try harder next time, {self.prev_loser.name}...")
+            print(f"Team {self.prev_winner.name} wins!! Try harder next time, {self.prev_loser.name}...\n")
             print(f"Team {self.prev_winner.name} \n\tK/D: {self.prev_winner.stats()}")
-            # print(f"\tSurviving Heros: ")
+            print(f"\tSurviving Heros: {self.prev_winner.survivors().join(", ")}")
             print(f"Team {self.prev_loser.name} \n\tK/D: {self.prev_loser.stats()}")
-            # print(f"\tSurviving Heros: ")
+            print(f"\tSurviving Heros: {self.prev_loser.survivors().join(", ")}")
 
 
 if __name__ == "__main__":
