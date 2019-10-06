@@ -52,8 +52,8 @@ class Weapon(Ability):
         """
         return randint(self.attack_strength/2, self.attack_strength)
 
-ABILITIES = [Weapon("rock", 20), Ability("fire", 80)]
-ARMORS = [Armor("leather", 10), Armor("iron", 40)]
+ABILITIES = [Weapon("rock", 200), Ability("fire", 200)]
+ARMORS = [Armor("leather", 50), Armor("iron", 100)]
 
 class Hero():
     def __init__(self, name, starting_health = 100):
@@ -192,7 +192,7 @@ class Team():
         for hero in self.heros:
             if hero.is_alive:
                 survivors.append(hero.name)
-        return survivors
+        return ", ".join(survivors)
 
 
     def attack(self, other_team):
@@ -298,7 +298,6 @@ class Arena():
             else:
                 self.prev_loser = self.team_one
 
-
     def show_stats(self):
         '''Prints team statistics to terminal.'''
         if self.prev_winner == "DRAW":
@@ -306,9 +305,9 @@ class Arena():
         else:
             print(f"Team {self.prev_winner.name} wins!! Try harder next time, {self.prev_loser.name}...\n")
             print(f"Team {self.prev_winner.name} \n\tK/D: {self.prev_winner.stats()}")
-            print(f"\tSurviving Heros: {self.prev_winner.survivors().join(", ")}")
+            print(f"\tSurviving Heros: {self.prev_winner.survivors()}")
             print(f"Team {self.prev_loser.name} \n\tK/D: {self.prev_loser.stats()}")
-            print(f"\tSurviving Heros: {self.prev_loser.survivors().join(", ")}")
+            print(f"\tSurviving Heros: {self.prev_loser.survivors()}")
 
 
 if __name__ == "__main__":
